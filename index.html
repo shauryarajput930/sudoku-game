@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sudoku</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Background decoration -->
+  <div class="bg-decoration" aria-hidden="true">
+    <div class="bg-grid"></div>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+  </div>
+
+  <div class="app-wrapper">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">SUDOKU</span>
+      </div>
+      <div class="timer-box">
+        <span class="timer-label">TIME</span>
+        <span class="timer-display" id="timerDisplay">00:00</span>
+      </div>
+    </header>
+
+    <!-- Controls -->
+    <div class="controls-bar">
+      <div class="difficulty-group">
+        <label class="control-label">DIFFICULTY</label>
+        <div class="difficulty-buttons">
+          <button class="diff-btn active" data-diff="easy">Easy</button>
+          <button class="diff-btn" data-diff="medium">Medium</button>
+          <button class="diff-btn" data-diff="hard">Hard</button>
+        </div>
+      </div>
+      <div class="action-buttons">
+        <button class="btn btn-secondary" id="btnReset">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg>
+          Reset
+        </button>
+        <button class="btn btn-secondary" id="btnSolve">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Solve
+        </button>
+        <button class="btn btn-primary" id="btnNew">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Game
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="stat-val" id="mistakeCount">0</span>
+        <span class="stat-label">Mistakes</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-val" id="cellsLeft">—</span>
+        <span class="stat-label">Remaining</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat toggle-row">
+        <label class="toggle-label" for="validationToggle">Live Check</label>
+        <div class="toggle-switch">
+          <input type="checkbox" id="validationToggle" checked />
+          <span class="toggle-slider"></span>
+        </div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat toggle-row">
+        <label class="toggle-label" for="notesToggle">Notes</label>
+        <div class="toggle-switch">
+          <input type="checkbox" id="notesToggle" />
+          <span class="toggle-slider"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game area -->
+    <main class="game-area">
+      <div class="grid-container">
+        <div class="sudoku-grid" id="sudokuGrid" role="grid" aria-label="Sudoku puzzle"></div>
+      </div>
+
+      <!-- Number pad -->
+      <div class="numpad" id="numpad" aria-label="Number input">
+        <button class="num-btn" data-num="1">1</button>
+        <button class="num-btn" data-num="2">2</button>
+        <button class="num-btn" data-num="3">3</button>
+        <button class="num-btn" data-num="4">4</button>
+        <button class="num-btn" data-num="5">5</button>
+        <button class="num-btn" data-num="6">6</button>
+        <button class="num-btn" data-num="7">7</button>
+        <button class="num-btn" data-num="8">8</button>
+        <button class="num-btn" data-num="9">9</button>
+        <button class="num-btn erase-btn" data-num="0" title="Erase">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>
+        </button>
+      </div>
+
+      <!-- Undo / Redo -->
+      <div class="undo-bar">
+        <button class="icon-btn" id="btnUndo" title="Undo (Ctrl+Z)" disabled>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+          Undo
+        </button>
+        <button class="icon-btn" id="btnRedo" title="Redo (Ctrl+Y)" disabled>
+          Redo
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
+        </button>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Victory overlay -->
+  <div class="overlay hidden" id="victoryOverlay" role="dialog" aria-modal="true">
+    <div class="overlay-card">
+      <div class="overlay-icon">✦</div>
+      <h2 class="overlay-title">Puzzle Solved!</h2>
+      <p class="overlay-subtitle" id="victoryMsg">Brilliant work.</p>
+      <div class="overlay-stats">
+        <div class="o-stat"><span id="finalTime">—</span><span>Time</span></div>
+        <div class="o-stat"><span id="finalMistakes">—</span><span>Mistakes</span></div>
+      </div>
+      <button class="btn btn-primary btn-wide" id="playAgainBtn">Play Again</button>
+    </div>
+  </div>
+
+  <!-- Confirmation overlay -->
+  <div class="overlay hidden" id="confirmOverlay" role="dialog" aria-modal="true">
+    <div class="overlay-card">
+      <div class="overlay-icon">⚠</div>
+      <h2 class="overlay-title" id="confirmTitle">Confirm Action</h2>
+      <p class="overlay-subtitle" id="confirmMessage">Are you sure?</p>
+      <div class="overlay-buttons">
+        <button class="btn btn-secondary" id="confirmCancel">Cancel</button>
+        <button class="btn btn-primary" id="confirmOk">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
