@@ -1,9 +1,9 @@
 const STATE = {
-  board: [],          // Current board (0 = empty)
-  solution: [],       // Solved board
-  given: [],          // Which cells are pre-filled (boolean grid)
-  notes: [],          // 9x9 array of Set (candidate notes per cell)
-  selectedCell: null, // { row, col }
+  board: [],
+  solution: [],
+  given: [],
+  notes: [],
+  selectedCell: null,
   difficulty: 'easy',
   mistakes: 0,
   timerSeconds: 0,
@@ -16,12 +16,8 @@ const STATE = {
   solving: false,
 };
 
-/* Difficulty → number of clues */
 const CLUE_COUNT = { easy: 40, medium: 30, hard: 24 };
 
-/* ============================================================
-   DOM REFERENCES
-============================================================ */
 const gridEl         = document.getElementById('sudokuGrid');
 const timerEl        = document.getElementById('timerDisplay');
 const mistakeEl      = document.getElementById('mistakeCount');
@@ -44,9 +40,6 @@ const confirmMessage = document.getElementById('confirmMessage');
 const confirmOk      = document.getElementById('confirmOk');
 const confirmCancel  = document.getElementById('confirmCancel');
 
-/* ============================================================
-   CUSTOM CONFIRMATION MODAL
-============================================================ */
 function showConfirm(title, message, onConfirm) {
   confirmTitle.textContent = title;
   confirmMessage.textContent = message;
@@ -62,17 +55,14 @@ function showConfirm(title, message, onConfirm) {
     hideConfirm();
   };
   
-  // Remove old listeners
   const newConfirmOk = confirmOk.cloneNode(true);
   const newConfirmCancel = confirmCancel.cloneNode(true);
   confirmOk.parentNode.replaceChild(newConfirmOk, confirmOk);
   confirmCancel.parentNode.replaceChild(newConfirmCancel, confirmCancel);
   
-  // Add new listeners
   newConfirmOk.addEventListener('click', handleConfirm);
   newConfirmCancel.addEventListener('click', handleCancel);
   
-  // Close on background click
   confirmOverlay.addEventListener('click', e => {
     if (e.target === confirmOverlay) hideConfirm();
   });
@@ -83,15 +73,10 @@ function hideConfirm() {
   confirmOverlay.setAttribute('aria-hidden', 'true');
 }
 
-/* ============================================================
-   BACKTRACKING — SOLVER
-   Returns true if board was solved in-place.
-============================================================ */
 function solve(board) {
   for (let r = 0; r < 9; r++) {
     for (let c = 0; c < 9; c++) {
       if (board[r][c] === 0) {
-        // Try each digit in shuffled order (for generation variety)
         for (let n = 1; n <= 9; n++) {
           if (isValid(board, r, c, n)) {
             board[r][c] = n;
@@ -99,26 +84,24 @@ function solve(board) {
             board[r][c] = 0;
           }
         }
-        return false; // Backtrack
+        return false;
       }
     }
-  }
-  return true; // All cells filled
-}
-
-/* Check if placing `num` at (r,c) is valid */
-function isValid(board, r, c, num) {
-  for (let i = 0; i < 9; i++) {
-    if (board[r][i] === num) return false;            // Row
-    if (board[i][c] === num) return false;            // Col
-    const br = 3 * Math.floor(r / 3) + Math.floor(i / 3);
-    const bc = 3 * Math.floor(c / 3) + (i % 3);
-    if (board[br][bc] === num) return false;          // Box
   }
   return true;
 }
 
-/* Shuffle array in-place (Fisher-Yates) */
+function isValid(board, r, c, num) {
+  for (let i = 0; i < 9; i++) {
+    if (board[r][i] === num) return false;
+    if (board[i][c] === num) return false;
+    const br = 3 * Math.floor(r / 3) + Math.floor(i / 3);
+    const bc = 3 * Math.floor(c / 3) + (i % 3);
+    if (board[br][bc] === num) return false;
+  }
+  return true;
+}
+
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -127,7 +110,6 @@ function shuffle(arr) {
   return arr;
 }
 
-/* Randomised solver (for puzzle generation) */
 function solveRandom(board) {
   for (let r = 0; r < 9; r++) {
     for (let c = 0; c < 9; c++) {
@@ -147,7 +129,6 @@ function solveRandom(board) {
   return true;
 }
 
-/* Count solutions (capped at 2 for uniqueness check) */
 function countSolutions(board, cap = 2) {
   const copy = board.map(r => [...r]);
   let count = 0;
@@ -175,15 +156,10 @@ function countSolutions(board, cap = 2) {
   return count;
 }
 
-/* ============================================================
-   PUZZLE GENERATION
-============================================================ */
 function generatePuzzle(difficulty) {
-  // 1. Create a fully solved board
   const full = Array.from({ length: 9 }, () => Array(9).fill(0));
   solveRandom(full);
 
-  // 2. Start with full board and remove cells one by one
   const puzzle = full.map(r => [...r]);
   const positions = shuffle(Array.from({ length: 81 }, (_, i) => [Math.floor(i/9), i%9]));
   const clues = CLUE_COUNT[difficulty];
@@ -193,9 +169,8 @@ function generatePuzzle(difficulty) {
     if (81 - removed <= clues) break;
     const backup = puzzle[r][c];
     puzzle[r][c] = 0;
-    // Ensure unique solution
     if (countSolutions(puzzle) !== 1) {
-      puzzle[r][c] = backup; // Restore if breaks uniqueness
+      puzzle[r][c] = backup;
     } else {
       removed++;
     }
@@ -204,9 +179,6 @@ function generatePuzzle(difficulty) {
   return { puzzle, solution: full };
 }
 
-/* ============================================================
-   DEEP COPY HELPERS
-============================================================ */
 function cloneBoard(board) {
   return board.map(r => [...r]);
 }
@@ -215,9 +187,6 @@ function cloneNotes(notes) {
   return notes.map(r => r.map(s => new Set(s)));
 }
 
-/* ============================================================
-   TIMER
-============================================================ */
 function startTimer() {
   stopTimer();
   STATE.timerSeconds = 0;
@@ -245,9 +214,6 @@ function formatTime(seconds) {
   return `${m}:${s}`;
 }
 
-/* ============================================================
-   GRID BUILDING
-============================================================ */
 function buildGrid() {
   gridEl.innerHTML = '';
 
@@ -267,15 +233,10 @@ function buildGrid() {
   }
 }
 
-/* Get a cell element by (row, col) */
 function getCell(r, c) {
   return gridEl.children[r * 9 + c];
 }
 
-/* ============================================================
-   RENDER
-   Update DOM to match STATE.board / STATE.notes
-============================================================ */
 function renderBoard() {
   for (let r = 0; r < 9; r++) {
     for (let c = 0; c < 9; c++) {
@@ -292,7 +253,6 @@ function renderCell(r, c) {
   const isGiven = STATE.given[r][c];
   const noteSet = STATE.notes[r][c];
 
-  // Reset classes
   cell.className = 'cell';
 
   if (isGiven) {
@@ -302,7 +262,6 @@ function renderCell(r, c) {
   } else if (val !== 0) {
     cell.classList.add('user');
 
-    // Validate
     if (STATE.liveValidation && val !== STATE.solution[r][c]) {
       cell.classList.add('error');
     }
@@ -310,7 +269,6 @@ function renderCell(r, c) {
     cell.innerHTML = `<span class="num-value">${val}</span>`;
     cell.setAttribute('aria-label', `Row ${r+1}, Column ${c+1}: ${val}`);
   } else if (noteSet && noteSet.size > 0) {
-    // Render notes
     let notesHtml = '<div class="notes-grid">';
     for (let n = 1; n <= 9; n++) {
       notesHtml += `<div class="note-digit ${noteSet.has(n) ? 'active' : ''}">${noteSet.has(n) ? n : ''}</div>`;
@@ -323,13 +281,11 @@ function renderCell(r, c) {
     cell.setAttribute('aria-label', `Row ${r+1}, Column ${c+1}: empty`);
   }
 
-  // Restore selection highlight
   if (STATE.selectedCell) {
     const { row, col } = STATE.selectedCell;
     if (r === row && c === col) {
       cell.classList.add('selected');
     } else if (shouldHighlight(r, c, row, col)) {
-      // Same row/col/box
       if (val !== 0 && STATE.board[row][col] !== 0 && val === STATE.board[row][col]) {
         cell.classList.add('same-num');
       } else {
@@ -341,56 +297,45 @@ function renderCell(r, c) {
   }
 }
 
-/* Returns true if (r,c) shares row/col/box with selected (sr,sc) */
 function shouldHighlight(r, c, sr, sc) {
   if (r === sr || c === sc) return true;
   return Math.floor(r/3) === Math.floor(sr/3) && Math.floor(c/3) === Math.floor(sc/3);
 }
 
-/* ============================================================
-   CELL SELECTION
-============================================================ */
 function selectCell(r, c) {
   STATE.selectedCell = { row: r, col: c };
   renderBoard();
   getCell(r, c).focus();
 }
 
-/* ============================================================
-   INPUT A NUMBER
-============================================================ */
 function inputNumber(num) {
   if (!STATE.selectedCell || STATE.solved || STATE.solving) return;
   const { row, col } = STATE.selectedCell;
-  if (STATE.given[row][col]) return; // Can't change given cells
+  if (STATE.given[row][col]) return;
 
   if (STATE.notesMode && num !== 0) {
-    // Toggle note
     pushHistory();
     const noteSet = STATE.notes[row][col];
     if (noteSet.has(num)) noteSet.delete(num);
     else noteSet.add(num);
-    STATE.board[row][col] = 0; // Clear value if entering note
+    STATE.board[row][col] = 0;
     renderCell(row, col);
     saveProgress();
     return;
   }
 
-  // Normal input
   const prev = STATE.board[row][col];
   const prevNotes = new Set(STATE.notes[row][col]);
 
-  if (prev === num) return; // No change
+  if (prev === num) return;
 
   pushHistory();
   STATE.board[row][col] = num;
-  STATE.notes[row][col] = new Set(); // Clear notes on value entry
+  STATE.notes[row][col] = new Set();
 
-  // Count mistakes
   if (num !== 0 && STATE.liveValidation && num !== STATE.solution[row][col]) {
     STATE.mistakes++;
     updateMistakeDisplay();
-    // Flash error
     renderCell(row, col);
     const cell = getCell(row, col);
     cell.classList.add('error');
@@ -408,16 +353,12 @@ function inputNumber(num) {
   checkWin();
 }
 
-/* ============================================================
-   WIN CHECK
-============================================================ */
 function checkWin() {
   for (let r = 0; r < 9; r++) {
     for (let c = 0; c < 9; c++) {
       if (STATE.board[r][c] !== STATE.solution[r][c]) return;
     }
   }
-  // All cells match solution
   STATE.solved = true;
   stopTimer();
   localStorage.removeItem('sudoku_save');
@@ -436,19 +377,14 @@ function showVictory() {
   victoryOverlay.setAttribute('aria-hidden', 'false');
 }
 
-/* ============================================================
-   AUTO-SOLVE ANIMATION
-============================================================ */
 async function autoSolve() {
   if (STATE.solving) return;
   STATE.solving = true;
   btnSolve.disabled = true;
 
-  // Work from a copy of current board
   const solvable = cloneBoard(STATE.board);
-  solve(solvable); // fills solvable in-place
+  solve(solvable);
 
-  // Collect empty cells to animate
   const emptyCells = [];
   for (let r = 0; r < 9; r++) {
     for (let c = 0; c < 9; c++) {
@@ -480,22 +416,18 @@ function sleep(ms) {
   return new Promise(res => setTimeout(res, ms));
 }
 
-/* ============================================================
-   UNDO / REDO
-============================================================ */
 function pushHistory() {
   STATE.undoStack.push({
     board: cloneBoard(STATE.board),
     notes: cloneNotes(STATE.notes),
     mistakes: STATE.mistakes,
   });
-  STATE.redoStack = []; // Clear redo on new action
+  STATE.redoStack = [];
   updateUndoRedoButtons();
 }
 
 function undo() {
   if (STATE.undoStack.length === 0) return;
-  // Save current state to redo
   STATE.redoStack.push({
     board: cloneBoard(STATE.board),
     notes: cloneNotes(STATE.notes),
@@ -533,9 +465,6 @@ function updateUndoRedoButtons() {
   btnRedo.disabled = STATE.redoStack.length === 0;
 }
 
-/* ============================================================
-   STATS UPDATES
-============================================================ */
 function updateMistakeDisplay() {
   mistakeEl.textContent = STATE.mistakes;
   mistakeEl.className = 'stat-val';
@@ -553,7 +482,6 @@ function updateCellsLeft() {
   cellsLeftEl.textContent = left;
 }
 
-/* Dim numpad buttons for fully-placed numbers */
 function updateNumpadDisabled() {
   const count = {};
   for (let n = 1; n <= 9; n++) count[n] = 0;
@@ -571,9 +499,6 @@ function updateNumpadDisabled() {
   });
 }
 
-/* ============================================================
-   NEW GAME / RESET
-============================================================ */
 function newGame(difficulty) {
   STATE.difficulty = difficulty || STATE.difficulty;
   STATE.solved = false;
@@ -612,7 +537,6 @@ function resetGame() {
     Array.from({ length: 9 }, () => new Set())
   );
 
-  // Restore original puzzle (clear user inputs)
   for (let r = 0; r < 9; r++) {
     for (let c = 0; c < 9; c++) {
       if (!STATE.given[r][c]) STATE.board[r][c] = 0;
@@ -626,9 +550,6 @@ function resetGame() {
   saveProgress();
 }
 
-/* ============================================================
-   LOCAL STORAGE
-============================================================ */
 function saveProgress() {
   try {
     const save = {
@@ -641,7 +562,7 @@ function saveProgress() {
       difficulty: STATE.difficulty,
     };
     localStorage.setItem('sudoku_save', JSON.stringify(save));
-  } catch (e) { /* Storage full or unavailable */ }
+  } catch (e) { }
 }
 
 function loadProgress() {
@@ -664,9 +585,6 @@ function loadProgress() {
   }
 }
 
-/* ============================================================
-   KEYBOARD HANDLING
-============================================================ */
 function onCellKeydown(e) {
   if (!STATE.selectedCell) return;
   const { row, col } = STATE.selectedCell;
@@ -707,11 +625,6 @@ document.addEventListener('keydown', e => {
   if (e.ctrlKey && e.shiftKey && e.key === 'Z') { e.preventDefault(); redo(); }
 });
 
-/* ============================================================
-   EVENT LISTENERS
-============================================================ */
-
-// Difficulty buttons
 document.querySelectorAll('.diff-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
@@ -720,7 +633,6 @@ document.querySelectorAll('.diff-btn').forEach(btn => {
   });
 });
 
-// Game control buttons
 btnNew.addEventListener('click', () => newGame(STATE.difficulty));
 
 btnReset.addEventListener('click', () => {
@@ -739,12 +651,10 @@ btnSolve.addEventListener('click', () => {
 btnUndo.addEventListener('click', undo);
 btnRedo.addEventListener('click', redo);
 
-// Number pad
 document.querySelectorAll('.num-btn').forEach(btn => {
   btn.addEventListener('click', () => inputNumber(parseInt(btn.dataset.num)));
 });
 
-// Toggles
 validationTog.addEventListener('change', () => {
   STATE.liveValidation = validationTog.checked;
   renderBoard();
@@ -754,27 +664,20 @@ notesTog.addEventListener('change', () => {
   STATE.notesMode = notesTog.checked;
 });
 
-// Victory screen play again
 playAgainBtn.addEventListener('click', () => {
   victoryOverlay.classList.add('hidden');
   newGame(STATE.difficulty);
 });
 
-// Close overlay on background click
 victoryOverlay.addEventListener('click', e => {
   if (e.target === victoryOverlay) victoryOverlay.classList.add('hidden');
 });
 
-/* ============================================================
-   INIT
-============================================================ */
 (function init() {
   buildGrid();
 
-  // Try restoring a saved game
   const restored = loadProgress();
   if (restored) {
-    // Update difficulty button UI
     document.querySelectorAll('.diff-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.diff === STATE.difficulty);
     });
@@ -786,7 +689,6 @@ victoryOverlay.addEventListener('click', e => {
     updateUndoRedoButtons();
     renderBoard();
 
-    // Resume timer from saved offset
     STATE.timerInterval = setInterval(() => {
       STATE.timerSeconds++;
       updateTimerDisplay();

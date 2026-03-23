@@ -10,7 +10,6 @@
 </head>
 <body>
 
-  <!-- Background decoration -->
   <div class="bg-decoration" aria-hidden="true">
     <div class="bg-grid"></div>
     <div class="glow glow-1"></div>
@@ -19,7 +18,6 @@
 
   <div class="app-wrapper">
 
-    <!-- Header -->
     <header class="header">
       <div class="logo">
         <span class="logo-icon">◈</span>
@@ -31,7 +29,6 @@
       </div>
     </header>
 
-    <!-- Controls -->
     <div class="controls-bar">
       <div class="difficulty-group">
         <label class="control-label">DIFFICULTY</label>
@@ -57,7 +54,6 @@
       </div>
     </div>
 
-    <!-- Stats bar -->
     <div class="stats-bar">
       <div class="stat">
         <span class="stat-val" id="mistakeCount">0</span>
@@ -86,13 +82,11 @@
       </div>
     </div>
 
-    <!-- Game area -->
     <main class="game-area">
       <div class="grid-container">
         <div class="sudoku-grid" id="sudokuGrid" role="grid" aria-label="Sudoku puzzle"></div>
       </div>
 
-      <!-- Number pad -->
       <div class="numpad" id="numpad" aria-label="Number input">
         <button class="num-btn" data-num="1">1</button>
         <button class="num-btn" data-num="2">2</button>
@@ -108,7 +102,6 @@
         </button>
       </div>
 
-      <!-- Undo / Redo -->
       <div class="undo-bar">
         <button class="icon-btn" id="btnUndo" title="Undo (Ctrl+Z)" disabled>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
@@ -123,7 +116,6 @@
 
   </div>
 
-  <!-- Victory overlay -->
   <div class="overlay hidden" id="victoryOverlay" role="dialog" aria-modal="true">
     <div class="overlay-card">
       <div class="overlay-icon">✦</div>
@@ -137,7 +129,6 @@
     </div>
   </div>
 
-  <!-- Confirmation overlay -->
   <div class="overlay hidden" id="confirmOverlay" role="dialog" aria-modal="true">
     <div class="overlay-card">
       <div class="overlay-icon">⚠</div>

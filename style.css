@@ -40,7 +40,6 @@
   --cell-size:    min(52px, 9.5vw);
 }
 
-/* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 
@@ -56,7 +55,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ---------- Background Decoration ---------- */
 .bg-decoration {
   position: fixed;
   inset: 0;
@@ -91,7 +89,6 @@ body {
   bottom: -100px; right: -80px;
 }
 
-/* ---------- App Wrapper ---------- */
 .app-wrapper {
   position: relative;
   z-index: 1;
@@ -102,7 +99,6 @@ body {
   gap: 16px;
 }
 
-/* ---------- Header ---------- */
 .header {
   display: flex;
   justify-content: space-between;
@@ -159,7 +155,6 @@ body {
   text-shadow: 0 0 20px var(--accent-glow);
 }
 
-/* ---------- Controls Bar ---------- */
 .controls-bar {
   display: flex;
   justify-content: space-between;
@@ -219,7 +214,6 @@ body {
   align-items: center;
 }
 
-/* ---------- Buttons ---------- */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -262,7 +256,6 @@ body {
 
 .btn-wide { width: 100%; justify-content: center; padding: 12px; font-size: 14px; }
 
-/* ---------- Stats Bar ---------- */
 .stats-bar {
   display: flex;
   align-items: center;
@@ -320,7 +313,6 @@ body {
   letter-spacing: 0.04em;
 }
 
-/* Toggle Switch */
 .toggle-switch { 
   position: relative; 
   display: inline-block; 
@@ -362,7 +354,6 @@ body {
   background: #fff;
 }
 
-/* ---------- Game Area ---------- */
 .game-area {
   display: flex;
   flex-direction: column;
@@ -370,7 +361,6 @@ body {
   gap: 16px;
 }
 
-/* ---------- Grid Container ---------- */
 .grid-container {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -379,7 +369,6 @@ body {
   box-shadow: var(--shadow);
 }
 
-/* ---------- Sudoku Grid ---------- */
 .sudoku-grid {
   display: grid;
   grid-template-columns: repeat(9, var(--cell-size));
@@ -390,7 +379,6 @@ body {
   position: relative;
 }
 
-/* ---------- Cell ---------- */
 .cell {
   width: var(--cell-size);
   height: var(--cell-size);
@@ -409,25 +397,19 @@ body {
   outline: none;
 }
 
-/* Remove right border on last column */
 .cell:nth-child(9n) { border-right: none; }
-/* Remove bottom border on last row */
 .cell:nth-child(n+73) { border-bottom: none; }
 
-/* Thick borders for 3x3 box separation */
-/* Right border after col 3, 6 */
 .cell:nth-child(9n+3),
 .cell:nth-child(9n+6) {
   border-right: 2.5px solid #3a5080;
 }
 
-/* Bottom border after row 3, 6 */
 .cell:nth-child(n+19):nth-child(-n+27),
 .cell:nth-child(n+46):nth-child(-n+54) {
   border-bottom: 2.5px solid #3a5080;
 }
 
-/* Cell States */
 .cell:hover:not(.given):not(.selected) {
   background: var(--bg-hover);
 }
@@ -474,7 +456,6 @@ body {
   animation: pop-in 0.2s ease;
 }
 
-/* Notes grid inside cell */
 .notes-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -496,7 +477,6 @@ body {
 
 .note-digit.active { color: var(--accent); }
 
-/* Solve animation */
 .cell.solving {
   animation: solve-pulse 0.35s ease;
 }
@@ -506,7 +486,6 @@ body {
   100% { background: transparent; }
 }
 
-/* ---------- Numpad ---------- */
 .numpad {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -569,7 +548,6 @@ body {
   box-shadow: 0 0 12px rgba(239,68,68,0.2);
 }
 
-/* ---------- Undo/Redo Bar ---------- */
 .undo-bar {
   display: flex;
   gap: 10px;
@@ -604,7 +582,6 @@ body {
   cursor: not-allowed;
 }
 
-/* ---------- Victory Overlay ---------- */
 .overlay {
   position: fixed;
   inset: 0;
@@ -710,16 +687,13 @@ body {
   text-transform: uppercase;
 }
 
-/* ---------- Mistake counter color ---------- */
 #mistakeCount.warn  { color: var(--warning); }
 #mistakeCount.danger { color: var(--error); }
 
-/* ---------- Scrollbar ---------- */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border-thick); border-radius: 4px; }
 
-/* ---------- Responsive ---------- */
 @media (max-width: 480px) {
   body { padding: 16px 10px 32px; }
   :root { --cell-size: min(39px, 10vw); }
